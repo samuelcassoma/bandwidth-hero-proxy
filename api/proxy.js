@@ -5,7 +5,10 @@ import sharp from "sharp";
 export default async function handler(req, res) {
   try {
     const url = req.query.url;
-    const quality = parseInt(req.query.quality) || 60; // padrão 60 se não passar nada
+    let quality = parseInt(req.query.quality) || 60; // qualidade padrão 60
+
+    if (quality < 40) quality = 40;
+    if (quality > 80) quality = 80;
 
     if (!url) {
       res.status(400).send("Missing url parameter");
@@ -26,10 +29,8 @@ export default async function handler(req, res) {
         try {
           const buffer = Buffer.concat(data);
 
-          // Redimensiona para no máximo 1080px de largura e aplica qualidade
           const output = await sharp(buffer)
-            .resize({ width: 1080, withoutEnlargement: true })
-            .jpeg({ quality: Math.min(Math.max(quality, 40), 80) })
+            .jpeg({ quality })
             .toBuffer();
 
           res.setHeader("Content-Type", "image/jpeg");
