@@ -5,16 +5,17 @@ import sharp from "sharp";
 export default async function handler(req, res) {
   try {
     const url = req.query.url;
-    let quality = parseInt(req.query.quality) || 60; // pega quality ou usa 60 por padrão
-
-    // garantir que o valor fique entre 40 e 80
-    if (quality < 40) quality = 40;
-    if (quality > 80) quality = 80;
-
     if (!url) {
       res.status(400).send("Missing url parameter");
       return;
     }
+
+    // lê a qualidade da query (?quality=50) ou usa 60 por padrão
+    let quality = parseInt(req.query.quality) || 60;
+
+    // garante que o valor fique entre 10 e 80
+    if (quality < 10) quality = 10;
+    if (quality > 80) quality = 80;
 
     const client = url.startsWith("https") ? https : http;
 
