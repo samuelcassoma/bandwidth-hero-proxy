@@ -5,17 +5,12 @@ import sharp from "sharp";
 export default async function handler(req, res) {
   try {
     const url = req.query.url;
+    const quality = parseInt(req.query.quality) || 60; // 👈 Lê o parâmetro ou usa 60
+
     if (!url) {
       res.status(400).send("Missing url parameter");
       return;
     }
-
-    // lê a qualidade da query (?quality=50) ou usa 60 por padrão
-    let quality = parseInt(req.query.quality) || 60;
-
-    // garante que o valor fique entre 10 e 80
-    if (quality < 10) quality = 10;
-    if (quality > 80) quality = 80;
 
     const client = url.startsWith("https") ? https : http;
 
@@ -31,7 +26,7 @@ export default async function handler(req, res) {
         try {
           const buffer = Buffer.concat(data);
 
-          // converte para JPEG na qualidade escolhida
+          // Agora usa a qualidade definida no parâmetro
           const output = await sharp(buffer)
             .jpeg({ quality })
             .toBuffer();
