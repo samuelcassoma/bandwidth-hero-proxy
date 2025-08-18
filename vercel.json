@@ -1,13 +1,9 @@
 {
-  "build": {
-    "env": {
-      "NODE_VERSION": "18"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/proxy",
-      "destination": "/api/proxy.js"
-    }
+  "version": 2,
+  "builds": [
+    { "src": "api/proxy.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/proxy.js" }
   ]
 }
