@@ -1,38 +1,50 @@
+import http from "http";
+import https from "https";
 import sharp from "sharp";
 
 export default async function handler(req, res) {
   try {
-    const { url, quality } = req.query;
+    const url = req.query.url;
+    let quality = parseInt(req.query.quality) || 60; // pega quality ou usa 60 por padrão
+
+    // garantir que o valor fique entre 40 e 80
+    if (quality < 40) quality = 40;
+    if (quality > 80) quality = 80;
+
     if (!url) {
       res.status(400).send("Missing url parameter");
       return;
     }
 
-    const q = parseInt(quality) || 60;
+    const client = url.startsWith("https") ? https : http;
 
-    // Fetch com headers para não ser bloqueado
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
-      },
+    client.get(url, (response) => {
+      if (response.statusCode !== 200) {
+        res.status(response.statusCode).send("Failed to fetch image");
+        return;
+      }
+
+      let data = [];
+      response.on("data", (chunk) => data.push(chunk));
+      response.on("end", async () => {
+        try {
+          const buffer = Buffer.concat(data);
+
+          // converte para JPEG na qualidade escolhida
+          const output = await sharp(buffer)
+            .jpeg({ quality })
+            .toBuffer();
+
+          res.setHeader("Content-Type", "image/jpeg");
+          res.send(output);
+        } catch (err) {
+          res.status(500).send("Error processing image: " + err.message);
+        }
+      });
+    }).on("error", () => {
+      res.status(500).send("Error fetching image");
     });
-
-    if (!response.ok) {
-      res.status(response.status).send("Failed to fetch image");
-      return;
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-
-    // Converte para JPEG comprimido
-    const output = await sharp(buffer)
-      .jpeg({ quality: q })
-      .toBuffer();
-
-    res.setHeader("Content-Type", "image/jpeg");
-    res.send(output);
   } catch (err) {
-    res.status(500).send("Internal server error: " + err.message);
+    res.status(500).send("Internal server error");
   }
 }
