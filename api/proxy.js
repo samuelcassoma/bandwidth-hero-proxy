@@ -5,11 +5,6 @@ import sharp from "sharp";
 export default async function handler(req, res) {
   try {
     const url = req.query.url;
-    let quality = parseInt(req.query.quality) || 60; // qualidade padrão 60
-
-    if (quality < 40) quality = 40;
-    if (quality > 80) quality = 80;
-
     if (!url) {
       res.status(400).send("Missing url parameter");
       return;
@@ -29,8 +24,9 @@ export default async function handler(req, res) {
         try {
           const buffer = Buffer.concat(data);
 
+          // Compressão fixa: 40%
           const output = await sharp(buffer)
-            .jpeg({ quality })
+            .jpeg({ quality: 40 })
             .toBuffer();
 
           res.setHeader("Content-Type", "image/jpeg");
@@ -45,4 +41,4 @@ export default async function handler(req, res) {
   } catch (err) {
     res.status(500).send("Internal server error");
   }
-}
+      }
