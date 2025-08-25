@@ -2,13 +2,15 @@
   "version": 2,
   "builds": [
     { "src": "api/proxy20.js", "use": "@vercel/node" },
+    { "src": "api/proxy30.js", "use": "@vercel/node" },
     { "src": "api/proxy40.js", "use": "@vercel/node" },
     { "src": "api/proxy50.js", "use": "@vercel/node" },
     { "src": "api/proxy60.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/proxy40", "dest": "/api/proxy20.js" },
-    { "src": "/api/proxy50", "dest": "/api/proxy40.js" },
+    { "src": "/api/proxy20", "dest": "/api/proxy20.js" },
+    { "src": "/api/proxy30", "dest": "/api/proxy30.js" },
+    { "src": "/api/proxy40", "dest": "/api/proxy40.js" },
     { "src": "/api/proxy50", "dest": "/api/proxy50.js" },
     { "src": "/api/proxy60", "dest": "/api/proxy60.js" }
   ]
