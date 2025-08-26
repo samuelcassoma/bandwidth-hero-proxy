@@ -1,13 +1,17 @@
 {
   "name": "bandwidth-hero-proxy",
   "version": "1.0.0",
-  "description": "Image compression proxy using Sharp",
-  "main": "api/proxy.js",
-  "type": "module",
+  "description": "Proxy de compressão de imagens com Sharp para Tachiyomi",
+  "main": "api/proxy30.js",
   "scripts": {
-    "start": "node api/proxy.js"
+    "dev": "vercel dev",
+    "start": "node api/proxy30.js"
   },
   "dependencies": {
     "sharp": "^0.33.2"
-  }
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "license": "MIT"
 }
